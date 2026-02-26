@@ -498,36 +498,47 @@ export default function PembuatanSPD() {
             </div>
 
             {/* HALAMAN BELAKANG (LAMPIRAN SPD) */}
-            <div className="print-spd-container" style={{ pageBreakBefore: 'always' }}>
-                <table style={{ width: '100%', marginBottom: '1rem', border: 'none' }}>
+            <div className="print-spd-container" style={{ pageBreakBefore: 'always', fontSize: '10pt' }}>
+                <table className="spd-table" style={{ width: '100%', marginBottom: '0', border: '1px solid black' }}>
                     <tbody>
                         <tr>
-                            <td style={{ width: '50%' }}></td>
-                            <td style={{ width: '50%' }}>
+                            <td style={{ width: '50%', borderRight: '1px solid black', padding: '0.5rem' }}>
+                                <br />
+                                <br />
+                                <br />
+                                <br />
+                                <br />
+                            </td>
+                            <td style={{ width: '50%', padding: '0.5rem' }}>
                                 <table style={{ width: '100%', border: 'none' }}>
                                     <tbody>
                                         <tr>
-                                            <td style={{ width: '10px', verticalAlign: 'top' }}>I.</td>
-                                            <td style={{ width: '100px', verticalAlign: 'top' }}>Berangkat dari</td>
-                                            <td style={{ verticalAlign: 'top' }}>: {formData.tempat_berangkat}</td>
+                                            <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>I.</td>
+                                            <td style={{ width: '100px', verticalAlign: 'top', border: 'none' }}>Berangkat dari</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
                                         </tr>
                                         <tr>
-                                            <td></td>
-                                            <td style={{ verticalAlign: 'top' }}>Ke</td>
-                                            <td style={{ verticalAlign: 'top' }}>: {formData.tempat_tujuan}</td>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>(Tempat Kedudukan)</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}></td>
                                         </tr>
                                         <tr>
-                                            <td></td>
-                                            <td style={{ verticalAlign: 'top' }}>Pada Tanggal</td>
-                                            <td style={{ verticalAlign: 'top' }}>: {formData.tanggal_berangkat}</td>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Ke</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
                                         </tr>
                                         <tr>
-                                            <td></td>
-                                            <td colSpan="2" style={{ paddingTop: '1rem' }}>Pejabat Pembuat Komitmen</td>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_berangkat}</td>
                                         </tr>
                                         <tr>
-                                            <td></td>
-                                            <td colSpan="2">
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Pejabat Pembuat Komitmen</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ border: 'none' }}>
                                                 {renderDigitalSignature(ppkUser.nama_lengkap, ppkUser.nip)}
                                             </td>
                                         </tr>
@@ -535,57 +546,169 @@ export default function PembuatanSPD() {
                                 </table>
                             </td>
                         </tr>
-                    </tbody>
-                </table>
 
-                <table className="spd-table">
-                    <tbody>
+                        {/* SECTION II */}
                         <tr>
-                            <td style={{ width: '50%', padding: '1rem' }}>
-                                <p>II. Tiba di: {formData.tempat_tujuan}</p>
-                                <p>Pada Tanggal: {formData.tanggal_berangkat}</p>
-                                <br />
-                                <p>Mengesahkan,</p>
+                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>II.</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba di</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_berangkat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <br /><br /><br />
-                                <p>(...................................................)</p>
+                                <p style={{ marginLeft: '1rem' }}>(...................................................)</p>
+                                <p style={{ marginLeft: '1rem' }}>NIP ...................................................</p>
                             </td>
-                            <td style={{ width: '50%', padding: '1rem' }}>
-                                <p>Berangkat dari: {formData.tempat_tujuan}</p>
-                                <p>Ke: {formData.tempat_berangkat}</p>
-                                <p>Pada Tanggal: {formData.tanggal_kembali}</p>
-                                <br />
-                                <p>Mengesahkan,</p>
+                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Berangkat dari</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Ke</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <br /><br /><br />
                                 <p>(...................................................)</p>
+                                <p>NIP ...................................................</p>
                             </td>
                         </tr>
+
+                        {/* SECTION III - BLANK ROW FOR EXTENDED TRAVEL */}
                         <tr>
-                            <td style={{ padding: '1rem' }}>
-                                <p>III. Tiba di: </p>
-                                <p>Pada Tanggal: </p>
-                                <br />
-                                <p>Mengesahkan,</p>
+                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>III.</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba di</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <br /><br /><br />
-                                <p>(...................................................)</p>
+                                <p style={{ marginLeft: '1rem' }}>(...................................................)</p>
+                                <p style={{ marginLeft: '1rem' }}>NIP ...................................................</p>
                             </td>
-                            <td style={{ padding: '1rem' }}>
-                                <p>Berangkat dari: </p>
-                                <p>Ke: </p>
-                                <p>Pada Tanggal: </p>
-                                <br />
-                                <p>Mengesahkan,</p>
+                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Berangkat dari</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Ke</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                                 <br /><br /><br />
                                 <p>(...................................................)</p>
+                                <p>NIP ...................................................</p>
+                            </td>
+                        </tr>
+
+                        {/* SECTION VI - ARRIVAL BACK AT BASE */}
+                        <tr>
+                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>VI.</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba di</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>(Tempat Kedudukan)</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}></td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Pejabat Pembuat Komitmen</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ border: 'none' }}>
+                                                {renderDigitalSignature(ppkUser.nama_lengkap, ppkUser.nip)}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
+                                <p style={{ textAlign: 'justify' }}>Telah diperiksa dengan keterangan bahwa perjalanan tersebut di atas benar dilakukan atas perintahnya dan semata-mata untuk kepentingan jabatan dalam waktu yang sesingkat-singkatnya.</p>
+                                <p style={{ marginTop: '1rem' }}>Pejabat Pembuat Komitmen</p>
+                                {renderDigitalSignature(ppkUser.nama_lengkap, ppkUser.nip)}
+                            </td>
+                        </tr>
+
+                        {/* SECTION VII - CATATAN */}
+                        <tr>
+                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                                <p>VII. Catatan Lain-lain</p>
+                            </td>
+                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
+                            </td>
+                        </tr>
+
+                        {/* SECTION VIII - PERHATIAN */}
+                        <tr>
+                            <td colSpan="2" style={{ padding: '1rem', borderTop: '1px solid black' }}>
+                                <p>VIII. <strong>PERHATIAN:</strong></p>
+                                <p style={{ fontSize: '9pt', textAlign: 'justify' }}>
+                                    PPK yang menerbitkan SPD, pegawai yang melakukan perjalanan dinas, para pejabat yang mengesahkan tanggal berangkat/tiba, serta bendahara pengeluaran bertanggung jawab berdasarkan peraturan-peraturan Keuangan Negara apabila negara menderita rugi akibat kesalahan, kelalaian, dan kealpaannya.
+                                </p>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-
-                <div style={{ marginTop: '2rem' }}>
-                    <p style={{ fontSize: '10pt', fontStyle: 'italic' }}>
-                        Catatan: Pejabat yang berwenang memberikan pengesahan / mengecap menandatangani Surat Perjalanan Dinas ini bertanggung jawab penuh apabila terjadi kerugian negara akibat kesalahan, pemalsuan, atau manipulasi data perjalanan dinas ini.
-                    </p>
-                </div>
             </div>
         </div>
     );
