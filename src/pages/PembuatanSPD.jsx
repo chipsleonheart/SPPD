@@ -78,6 +78,16 @@ export default function PembuatanSPD() {
         </div>
     );
 
+    const renderDigitalSignatureLampiran = (name, nip) => (
+        <div style={{ marginTop: '0.5rem' }}>
+            <QRCode value={window.location.origin} size={50} style={{ marginBottom: '0.25rem' }} />
+            <div style={{ lineHeight: 1.2 }}>
+                <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>{name}</span><br />
+                NIP. {nip}
+            </div>
+        </div>
+    );
+
     const handleBuatSpd = (st, peg) => {
         const nextNo = sppdList.length + 1;
         setFormData(prev => ({
@@ -539,7 +549,7 @@ export default function PembuatanSPD() {
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
                                             <td colSpan="2" style={{ border: 'none' }}>
-                                                {renderDigitalSignature(ppkUser.nama_lengkap, ppkUser.nip)}
+                                                {renderDigitalSignatureLampiran(ppkUser.nama_lengkap, ppkUser.nip)}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -564,11 +574,11 @@ export default function PembuatanSPD() {
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
+                                            <td colSpan="2" style={{ paddingTop: '0.5rem', border: 'none' }}>Kepala ...................................................</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <br /><br /><br />
+                                <br /><br />
                                 <p style={{ marginLeft: '1rem' }}>(...................................................)</p>
                                 <p style={{ marginLeft: '1rem' }}>NIP ...................................................</p>
                             </td>
@@ -588,66 +598,16 @@ export default function PembuatanSPD() {
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
                                         </tr>
                                         <tr>
-                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
+                                            <td colSpan="2" style={{ paddingTop: '0.5rem', border: 'none' }}>Kepala ...................................................</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <br /><br /><br />
+                                <br /><br />
                                 <p>(...................................................)</p>
                                 <p>NIP ...................................................</p>
                             </td>
                         </tr>
 
-                        {/* SECTION III - BLANK ROW FOR EXTENDED TRAVEL */}
-                        <tr>
-                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
-                                <table style={{ width: '100%', border: 'none' }}>
-                                    <tbody>
-                                        <tr>
-                                            <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>III.</td>
-                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba di</td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
-                                        </tr>
-                                        <tr>
-                                            <td style={{ border: 'none' }}></td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
-                                        </tr>
-                                        <tr>
-                                            <td style={{ border: 'none' }}></td>
-                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <br /><br /><br />
-                                <p style={{ marginLeft: '1rem' }}>(...................................................)</p>
-                                <p style={{ marginLeft: '1rem' }}>NIP ...................................................</p>
-                            </td>
-                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
-                                <table style={{ width: '100%', border: 'none' }}>
-                                    <tbody>
-                                        <tr>
-                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Berangkat dari</td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
-                                        </tr>
-                                        <tr>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Ke</td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
-                                        </tr>
-                                        <tr>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: </td>
-                                        </tr>
-                                        <tr>
-                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Kepala ...................................................</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <br /><br /><br />
-                                <p>(...................................................)</p>
-                                <p>NIP ...................................................</p>
-                            </td>
-                        </tr>
 
                         {/* SECTION VI - ARRIVAL BACK AT BASE */}
                         <tr>
@@ -676,7 +636,7 @@ export default function PembuatanSPD() {
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
                                             <td colSpan="2" style={{ border: 'none' }}>
-                                                {renderDigitalSignature(ppkUser.nama_lengkap, ppkUser.nip)}
+                                                {renderDigitalSignatureLampiran(ppkUser.nama_lengkap, ppkUser.nip)}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -684,8 +644,8 @@ export default function PembuatanSPD() {
                             </td>
                             <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
                                 <p style={{ textAlign: 'justify' }}>Telah diperiksa dengan keterangan bahwa perjalanan tersebut di atas benar dilakukan atas perintahnya dan semata-mata untuk kepentingan jabatan dalam waktu yang sesingkat-singkatnya.</p>
-                                <p style={{ marginTop: '1rem' }}>Pejabat Pembuat Komitmen</p>
-                                {renderDigitalSignature(ppkUser.nama_lengkap, ppkUser.nip)}
+                                <p style={{ marginTop: '0.5rem' }}>Pejabat Pembuat Komitmen</p>
+                                {renderDigitalSignatureLampiran(ppkUser.nama_lengkap, ppkUser.nip)}
                             </td>
                         </tr>
 
@@ -700,7 +660,7 @@ export default function PembuatanSPD() {
 
                         {/* SECTION VIII - PERHATIAN */}
                         <tr>
-                            <td colSpan="2" style={{ padding: '1rem', borderTop: '1px solid black' }}>
+                            <td colSpan="2" style={{ padding: '0.5rem 1rem', borderTop: '1px solid black' }}>
                                 <p>VIII. <strong>PERHATIAN:</strong></p>
                                 <p style={{ fontSize: '9pt', textAlign: 'justify' }}>
                                     PPK yang menerbitkan SPD, pegawai yang melakukan perjalanan dinas, para pejabat yang mengesahkan tanggal berangkat/tiba, serta bendahara pengeluaran bertanggung jawab berdasarkan peraturan-peraturan Keuangan Negara apabila negara menderita rugi akibat kesalahan, kelalaian, dan kealpaannya.
