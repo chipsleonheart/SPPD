@@ -12,7 +12,7 @@ export default function VerifikasiST() {
     useEffect(() => {
         const fetchST = async () => {
             try {
-                const res = await fetch(`http://localhost:3001/api/public/surat-tugas/${id}`);
+                const res = await fetch(`/api/public/surat-tugas/${id}`);
                 if (!res.ok) {
                     throw new Error('Gagal mengambil data Surat Tugas.');
                 }
@@ -20,7 +20,7 @@ export default function VerifikasiST() {
                 setSt(data);
 
                 // Fetch potential approvers
-                const resPegawai = await fetch('http://localhost:3001/api/pegawai');
+                const resPegawai = await fetch('/api/pegawai');
                 if (resPegawai.ok) {
                     const pegData = await resPegawai.json();
                     const isKetuaApproval = data.status_persetujuan === 'MENUNGGU_KETUA';

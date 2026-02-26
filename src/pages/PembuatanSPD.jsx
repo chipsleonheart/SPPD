@@ -20,9 +20,9 @@ export default function PembuatanSPD() {
         const loadMasterData = async () => {
             try {
                 const [resST, resPeg, resSPPD] = await Promise.all([
-                    authFetch('http://localhost:3001/api/surat-tugas'),
-                    authFetch('http://localhost:3001/api/pegawai'),
-                    authFetch('http://localhost:3001/api/sppd')
+                    authFetch('/api/surat-tugas'),
+                    authFetch('/api/pegawai'),
+                    authFetch('/api/sppd')
                 ]);
                 const st = await resST.json();
                 const peg = await resPeg.json();
@@ -140,13 +140,13 @@ export default function PembuatanSPD() {
 
             let response;
             if (editingSpdId) {
-                response = await authFetch(`http://localhost:3001/api/sppd/${editingSpdId}`, {
+                response = await authFetch(`/api/sppd/${editingSpdId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
             } else {
-                response = await authFetch('http://localhost:3001/api/sppd', {
+                response = await authFetch('/api/sppd', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -158,7 +158,7 @@ export default function PembuatanSPD() {
             await response.json();
 
             // Reload SPPD to secure relations
-            const resSPPD = await authFetch('http://localhost:3001/api/sppd');
+            const resSPPD = await authFetch('/api/sppd');
             const sppdData = await resSPPD.json();
             setSppdList(sppdData);
 

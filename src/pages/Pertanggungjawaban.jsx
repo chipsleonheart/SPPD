@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import QRCode from 'react-qr-code';
 
 export default function Pertanggungjawaban() {
-    const { authFetch, user } = useAuth();
+    const { authFetch, user, token } = useAuth();
     const [stList, setStList] = useState([]);
     const [sppdList, setSppdList] = useState([]);
     const [spjList, setSpjList] = useState([]);
@@ -27,10 +27,10 @@ export default function Pertanggungjawaban() {
     const loadMasterData = async () => {
         try {
             const [resST, resSPPD, resSPJ, resPeg] = await Promise.all([
-                authFetch('http://localhost:3001/api/surat-tugas'),
-                authFetch('http://localhost:3001/api/sppd'),
-                authFetch('http://localhost:3001/api/spj'),
-                authFetch('http://localhost:3001/api/pegawai')
+                authFetch('/api/surat-tugas'),
+                authFetch('/api/sppd'),
+                authFetch('/api/spj'),
+                authFetch('/api/pegawai')
             ]);
 
             const stData = await resST.json();
@@ -137,13 +137,13 @@ export default function Pertanggungjawaban() {
         const submitData = new FormData();
         submitData.append('sppd_id', formData.sppd_id);
         submitData.append('pegawai_id', formData.pegawai_id);
-        submitData.append('uang_harian_tarif', formData.tarif_uang_harian);
-        submitData.append('uang_harian_jumlah_hari', formData.lama_perjalanan);
-        submitData.append('biaya_transportasi_tiket', formData.biaya_tiket);
-        submitData.append('biaya_transportasi_taksi', formData.biaya_taksi);
-        submitData.append('biaya_penginapan_tarif', formData.tarif_hotel);
-        submitData.append('biaya_penginapan_jumlah_malam', formData.lama_menginap);
-        submitData.append('total_biaya_riil', grandTotal);
+        submitData.append('uang_harian_tarif', Number(formData.tarif_uang_harian) || 0);
+        submitData.append('uang_harian_jumlah_hari', Number(formData.lama_perjalanan) || 0);
+        submitData.append('biaya_transportasi_tiket', Number(formData.biaya_tiket) || 0);
+        submitData.append('biaya_transportasi_taksi', Number(formData.biaya_taksi) || 0);
+        submitData.append('biaya_penginapan_tarif', Number(formData.tarif_hotel) || 0);
+        submitData.append('biaya_penginapan_jumlah_malam', Number(formData.lama_menginap) || 0);
+        submitData.append('total_biaya_riil', Number(grandTotal) || 0);
 
         if (formData.bukti_tiket) submitData.append('tiket', formData.bukti_tiket);
         if (formData.bukti_taksi) submitData.append('taksi', formData.bukti_taksi);
@@ -152,18 +152,18 @@ export default function Pertanggungjawaban() {
         try {
             let response;
             const headers = {
-                'Authorization': `Bearer ${user?.token || ''}`,
+                'Authorization': `Bearer ${token || ''}`,
                 'x-st-number': formData.no_st
             };
 
             if (editingSpjId) {
-                response = await fetch(`http://localhost:3001/api/spj/${editingSpjId}`, {
+                response = await fetch(`/api/spj/${editingSpjId}`, {
                     method: 'PUT',
                     headers,
                     body: submitData
                 });
             } else {
-                response = await fetch('http://localhost:3001/api/spj', {
+                response = await fetch('/api/spj', {
                     method: 'POST',
                     headers,
                     body: submitData

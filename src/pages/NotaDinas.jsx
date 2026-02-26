@@ -25,8 +25,8 @@ export default function NotaDinas() {
     const fetchData = async () => {
         try {
             const [resND, resPeg] = await Promise.all([
-                authFetch('http://localhost:3001/api/nota-dinas'),
-                authFetch('http://localhost:3001/api/pegawai')
+                authFetch('/api/nota-dinas'),
+                authFetch('/api/pegawai')
             ]);
             const dataND = await resND.json();
             const dataPeg = await resPeg.json();
@@ -79,7 +79,7 @@ export default function NotaDinas() {
                 pengusul_id: user?.id
             };
 
-            const endpoint = editId ? `http://localhost:3001/api/nota-dinas/${editId}` : 'http://localhost:3001/api/nota-dinas';
+            const endpoint = editId ? `/api/nota-dinas/${editId}` : '/api/nota-dinas';
             const method = editId ? 'PUT' : 'POST';
 
             await authFetch(endpoint, {

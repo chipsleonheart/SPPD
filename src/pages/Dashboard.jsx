@@ -12,7 +12,7 @@ export default function Dashboard() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        authFetch('http://localhost:3001/api/dashboard/stats')
+        authFetch('/api/dashboard/stats')
             .then(res => res.json())
             .then(data => {
                 setStats([

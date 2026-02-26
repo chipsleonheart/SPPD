@@ -1,0 +1,223 @@
+// Schema Database SPPD ASN
+// Menggunakan PostgreSQL dan Prisma ORM
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows", "debian-openssl-1.1.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum untuk Status dan Role
+enum Role {
+  PEGAWAI
+  PPK
+  KPA
+  ADMIN
+  BENDAHARA_PENGELUARAN
+  KETUA
+  KOMISIONER
+}
+
+enum StatusND {
+  DRAFT
+  DIAJUKAN
+  DISETUJUI_PPK
+  DITOLAK
+}
+
+enum StatusST {
+  MENUNGGU_PPK
+  MENUNGGU_KPA
+  MENUNGGU_KETUA
+  DITERBITKAN
+  DITOLAK
+}
+
+enum StatusSPD {
+  DRAFT
+  DITERBITKAN
+}
+
+enum StatusSPJ {
+  DRAFT
+  DIAJUKAN
+  VERIFIED_PPK
+  VERIFIED_BENDAHARA
+  SELESAI
+}
+
+// Tabel Pegawai / Users
+model User {
+  id               String   @id @default(uuid())
+  nip              String   @unique // Username Login
+  password_hash    String
+  nama_lengkap     String
+  pangkat_golongan String
+  jabatan          String
+  role             Role     @default(PEGAWAI)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relasi
+  nota_dinas_dibuat NotaDinas[]  @relation("PengusulNotaDinas")
+  st_disetujui_ppk  SuratTugas[] @relation("PersetujuanPPK")
+  st_disetujui_kpa  SuratTugas[] @relation("PersetujuanKPA")
+  SuratTugasPegawai SuratTugasPegawai[]
+  Sppd              Sppd[]
+  GeotaggingCheckin GeotaggingCheckin[]
+  Spj               Spj[]
+
+  @@map("users")
+}
+
+// Tabel Nota Dinas
+model NotaDinas {
+  id          String   @id @default(uuid())
+  nomor_nd    String   @unique
+  tanggal_nd  DateTime
+  perihal     String
+  tujuan      String
+  status      StatusND @default(DRAFT)
+  
+  pengusul_id String
+  pengusul    User     @relation("PengusulNotaDinas", fields: [pengusul_id], references: [id])
+  
+  maksud             String?
+  dasar              String?
+  pegawai_ditugaskan String?
+  
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  SuratTugas  SuratTugas[]
+
+  @@map("nota_dinas")
+}
+
+// Tabel Surat Tugas
+model SuratTugas {
+  id                 String     @id @default(uuid())
+  nota_dinas_id      String
+  nota_dinas         NotaDinas  @relation(fields: [nota_dinas_id], references: [id])
+  
+  nomor_st           String     @unique
+  tanggal_st         DateTime
+  menimbang          String
+  dasar              String
+  untuk              String
+  
+  status_persetujuan StatusST   @default(MENUNGGU_PPK)
+  
+  disetujui_oleh_ppk_id String?
+  ppk                   User?   @relation("PersetujuanPPK", fields: [disetujui_oleh_ppk_id], references: [id])
+  
+  disetujui_oleh_kpa_id String?
+  kpa                   User?   @relation("PersetujuanKPA", fields: [disetujui_oleh_kpa_id], references: [id])
+
+  created_at         DateTime   @default(now())
+  updated_at         DateTime   @updatedAt
+
+  pegawai            SuratTugasPegawai[]
+  Sppd               Sppd[]
+
+  @@map("surat_tugas")
+}
+
+// Pivot Table Surat Tugas <-> Pegawai (Banyak ke Banyak)
+model SuratTugasPegawai {
+  id             String     @id @default(uuid())
+  surat_tugas_id String
+  surat_tugas    SuratTugas @relation(fields: [surat_tugas_id], references: [id])
+  
+  pegawai_id     String
+  pegawai        User       @relation(fields: [pegawai_id], references: [id])
+
+  @@unique([surat_tugas_id, pegawai_id])
+  @@map("surat_tugas_pegawai")
+}
+
+// Tabel SPPD (Surat Perjalanan Dinas)
+model Sppd {
+  id                    String     @id @default(uuid())
+  surat_tugas_id        String
+  surat_tugas           SuratTugas @relation(fields: [surat_tugas_id], references: [id])
+
+  pegawai_id            String
+  pegawai               User       @relation(fields: [pegawai_id], references: [id])
+  
+  nomor_spd             String     @unique
+  tingkat_biaya         String
+  alat_angkutan         String
+  tempat_berangkat      String
+  tempat_tujuan         String
+  tanggal_berangkat     DateTime
+  tanggal_kembali       DateTime
+  instansi_pembebanan   String
+  mata_anggaran         String
+  
+  status                StatusSPD  @default(DRAFT)
+  
+  created_at            DateTime   @default(now())
+  updated_at            DateTime   @updatedAt
+
+  GeotaggingCheckin     GeotaggingCheckin[]
+  Spj                   Spj?
+
+  @@unique([surat_tugas_id, pegawai_id]) // 1 pegawai hanya punya 1 SPD per 1 ST
+  @@map("sppd")
+}
+
+// Tabel Logging Geotagging
+model GeotaggingCheckin {
+  id               String   @id @default(uuid())
+  sppd_id          String
+  sppd             Sppd     @relation(fields: [sppd_id], references: [id])
+
+  pegawai_id       String
+  pegawai          User     @relation(fields: [pegawai_id], references: [id])
+  
+  latitude         Float
+  longitude        Float
+  foto_bukti_path  String   // URL ke Storage (S3 / Local Uploads)
+  
+  waktu_checkin    DateTime @default(now())
+
+  @@map("geotagging_checkin")
+}
+
+// Tabel SPJ (Pertanggungjawaban)
+model Spj {
+  id                            String    @id @default(uuid())
+  sppd_id                       String    @unique
+  sppd                          Sppd      @relation(fields: [sppd_id], references: [id])
+
+  pegawai_id                    String
+  pegawai                       User      @relation(fields: [pegawai_id], references: [id])
+  
+  uang_harian_tarif             Float
+  uang_harian_jumlah_hari       Int
+  
+  biaya_transportasi_tiket      Float
+  biaya_transportasi_taksi      Float   @default(0)
+  
+  biaya_penginapan_tarif        Float
+  biaya_penginapan_jumlah_malam Int
+  
+  total_biaya_riil              Float
+  
+  // Bukti URL Lampiran Upload
+  file_bukti_tiket_path         String?
+  file_bukti_taksi_path         String?
+  file_bukti_hotel_path         String?
+  
+  status_verifikasi             StatusSPJ @default(DRAFT)
+  
+  created_at                    DateTime  @default(now())
+  updated_at                    DateTime  @updatedAt
+
+  @@map("spj")
+}

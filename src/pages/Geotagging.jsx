@@ -22,8 +22,8 @@ export default function Geotagging() {
         const loadData = async () => {
             try {
                 const [resSppd, resGeo] = await Promise.all([
-                    authFetch('http://localhost:3001/api/sppd'),
-                    authFetch('http://localhost:3001/api/geotagging')
+                    authFetch('/api/sppd'),
+                    authFetch('/api/geotagging')
                 ]);
                 const sppdData = await resSppd.json();
                 const geoData = await resGeo.json();
@@ -69,7 +69,7 @@ export default function Geotagging() {
 
     const reloadHistory = async () => {
         try {
-            const resGeo = await authFetch('http://localhost:3001/api/geotagging');
+            const resGeo = await authFetch('/api/geotagging');
             const geoData = await resGeo.json();
             setHistoryList(Array.isArray(geoData) ? geoData : []);
         } catch (e) { console.error(e); }
@@ -135,8 +135,8 @@ export default function Geotagging() {
 
             const isEditing = !!editingId;
             const url = isEditing
-                ? `http://localhost:3001/api/geotagging/${editingId}`
-                : 'http://localhost:3001/api/geotagging';
+                ? `/api/geotagging/${editingId}`
+                : '/api/geotagging';
 
             const res = await authFetch(url, {
                 method: isEditing ? 'PUT' : 'POST',
@@ -337,7 +337,7 @@ export default function Geotagging() {
                                         <tr key={item.id} style={{ borderBottom: '1px solid var(--border-color)', verticalAlign: 'middle' }}>
                                             <td style={{ padding: '0.5rem 1rem' }}>
                                                 {item.foto_bukti_path ? (
-                                                    <img src={`http://localhost:3001${item.foto_bukti_path}`} alt="Bukti"
+                                                    <img src={`${item.foto_bukti_path}`} alt="Bukti"
                                                         style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border-color)' }}
                                                         crossOrigin="anonymous"
                                                     />

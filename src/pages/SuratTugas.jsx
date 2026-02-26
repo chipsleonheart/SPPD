@@ -17,9 +17,9 @@ export default function SuratTugas() {
         setIsLoading(true);
         try {
             const [resND, resST, resPegawai] = await Promise.all([
-                authFetch('http://localhost:3001/api/nota-dinas'),
-                authFetch('http://localhost:3001/api/surat-tugas'),
-                authFetch('http://localhost:3001/api/pegawai')
+                authFetch('/api/nota-dinas'),
+                authFetch('/api/surat-tugas'),
+                authFetch('/api/pegawai')
             ]);
             const dsND = await resND.json();
             const dsST = await resST.json();
@@ -103,7 +103,7 @@ export default function SuratTugas() {
                 });
 
                 const createST = async (pegawaiGroup, targetRole) => {
-                    const resST = await authFetch('http://localhost:3001/api/surat-tugas', {
+                    const resST = await authFetch('/api/surat-tugas', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -121,7 +121,7 @@ export default function SuratTugas() {
                     // Attach pegawai to ST
                     for (const p of pegawaiGroup) {
                         if (p.id && !p.id.toString().startsWith('unknown')) {
-                            await authFetch('http://localhost:3001/api/surat-tugas-pegawai', {
+                            await authFetch('/api/surat-tugas-pegawai', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ surat_tugas_id: stData.id, pegawai_id: p.id })
@@ -133,19 +133,19 @@ export default function SuratTugas() {
                 if (groupKetua.length > 0) await createST(groupKetua, 'KETUA');
                 if (groupSekretaris.length > 0) await createST(groupSekretaris, 'KPA');
 
-                await authFetch(`http://localhost:3001/api/nota-dinas/${id}/status`, {
+                await authFetch(`/api/nota-dinas/${id}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'DISETUJUI_PPK' })
                 });
             } else if (role === 'KPA' && type === 'ST') {
-                await authFetch(`http://localhost:3001/api/surat-tugas/${id}/status`, {
+                await authFetch(`/api/surat-tugas/${id}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'DITERBITKAN' })
                 });
             } else if (role === 'KETUA' && type === 'ST') {
-                await authFetch(`http://localhost:3001/api/surat-tugas/${id}/status`, {
+                await authFetch(`/api/surat-tugas/${id}/status`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'DITERBITKAN' })

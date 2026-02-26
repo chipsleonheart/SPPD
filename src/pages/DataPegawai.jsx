@@ -9,7 +9,7 @@ export default function DataPegawai() {
     const [editId, setEditId] = useState(null);
     const [formData, setFormData] = useState({ nip: '', nama_lengkap: '', pangkat_golongan: '', jabatan: '', role: 'PEGAWAI', password: '' });
 
-    const API_URL = 'http://localhost:3001/api/pegawai';
+    const API_URL = '/api/pegawai';
 
     const fetchPegawai = async () => {
         setIsLoading(true);
@@ -127,6 +127,8 @@ export default function DataPegawai() {
                                         {p.role === 'KPA' && <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, backgroundColor: 'var(--danger-color)', color: 'white' }}>Sekretaris (KPA)</span>}
                                         {p.role === 'PPK' && <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, backgroundColor: 'var(--warning-color)', color: '#fff' }}>PPK</span>}
                                         {p.role === 'BENDAHARA_PENGELUARAN' && <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, backgroundColor: '#8b5cf6', color: 'white' }}>Bendahara</span>}
+                                        {p.role === 'KETUA' && <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, backgroundColor: '#10b981', color: 'white' }}>Ketua</span>}
+                                        {p.role === 'KOMISIONER' && <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, backgroundColor: '#f59e0b', color: 'white' }}>Komisioner</span>}
                                         {p.role === 'PEGAWAI' && <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, backgroundColor: 'var(--secondary-color)', color: 'var(--text-main)' }}>Pegawai</span>}
                                         {p.role === 'ADMIN' && <span style={{ padding: '0.25rem 0.75rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600, backgroundColor: 'var(--primary-color)', color: 'white' }}>Admin</span>}
                                     </td>

@@ -33,10 +33,10 @@ export default function LaporanPerjalanan() {
     const loadData = async () => {
         try {
             const [resST, resPeg, resSPPD, resGeo] = await Promise.all([
-                authFetch('http://localhost:3001/api/surat-tugas'),
-                authFetch('http://localhost:3001/api/pegawai'),
-                authFetch('http://localhost:3001/api/sppd'),
-                authFetch('http://localhost:3001/api/geotagging')
+                authFetch('/api/surat-tugas'),
+                authFetch('/api/pegawai'),
+                authFetch('/api/sppd'),
+                authFetch('/api/geotagging')
             ]);
 
             const stData = await resST.json();
@@ -412,7 +412,7 @@ export default function LaporanPerjalanan() {
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
                                                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                                                     <img
-                                                        src={`http://localhost:3001${formData.geotag.foto_bukti_path}`}
+                                                        src={`${formData.geotag.foto_bukti_path}`}
                                                         alt="Bukti Kehadiran"
                                                         style={{ width: '150px', height: '200px', objectFit: 'cover', border: '1px solid #ccc', borderRadius: '4px' }}
                                                         crossOrigin="anonymous"
