@@ -366,28 +366,76 @@ button {
 
   .topbar-title {
     font-size: 1rem !important;
-    display: none;
     /* Hide on very small screens to save space or adjust */
   }
 
-  @media (min-width: 400px) {
+  @media (max-width: 400px) {
     .topbar-title {
-      display: block;
+      display: none;
     }
   }
 
   /* Make hardcoded inline grids single column on mobile */
-  div[style*="gridTemplateColumns"]:not(.dashboard *),
+  div[style*="gridTemplateColumns"],
   form[style*="gridTemplateColumns"] {
     grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  /* Fix split columns in specific forms (like Datagrid in SPJ or SPD) */
+  .form-group[style*="gridColumn:"] {
+    grid-column: span 1 !important;
   }
 
   /* Improve table scrolling on mobile */
+  .card-body>div[style*="overflow"]>table,
   .card-body>table,
   .card-body>div>table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
+    display: block !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+  }
+
+  /* Make all table headers and cells have appropriate padding on mobile */
+  th,
+  td {
+    padding: 0.75rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  /* Base buttons stretch in mobile view if they are inside a flex wrapper */
+  .btn {
+    padding: 0.6rem 1rem !important;
+    width: auto;
+  }
+
+  /* Form input sizing adjustments */
+  .form-control {
+    font-size: 1rem !important;
+    /* Prevents auto-zoom on iOS Safari */
+    padding: 0.75rem !important;
+  }
+
+  .card-header {
+    padding: 1rem !important;
+  }
+
+  .card-body {
+    padding: 1rem !important;
+  }
+
+  /* Fix specific row layouts in SPJ / Laporan that use flex row */
+  div[style*="display: flex"][style*="justifyContent: space-between"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+
+  /* Re-align text left for stacks that were split left-center-right */
+  div[style*="textAlign: center"],
+  div[style*="textAlign: right"] {
+    text-align: left !important;
   }
 }

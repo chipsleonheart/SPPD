@@ -406,20 +406,20 @@ export default function PembuatanSPD() {
                 <table className="spd-table">
                     <tbody>
                         <tr>
-                            <td style={{ width: '5%', textAlign: 'center' }}>1.</td>
+                            <td style={{ width: '5%', textAlign: 'center' }}>1</td>
                             <td style={{ width: '45%' }}>Pejabat Pembuat Komitmen</td>
                             <td style={{ width: '50%' }}>{formData.pejabat_pembuat_komitmen}</td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>2.</td>
-                            <td>Nama / NIP Pegawai yang melaksanakan perjalanan dinas</td>
+                            <td style={{ textAlign: 'center' }}>2</td>
+                            <td>Nama/NIP Pegawai yang melaksanakan perjalanan dinas</td>
                             <td>{formData.nama_pegawai}</td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>3.</td>
+                            <td style={{ textAlign: 'center' }}>3</td>
                             <td>
-                                a. Pangkat dan Golongan<br />
-                                b. Jabatan / Instansi<br />
+                                a. Pangkat dan Golongan ruang gaji menurut PP No. 6 Tahun 1997<br />
+                                b. Jabatan/Instansi<br />
                                 c. Tingkat Biaya Perjalanan Dinas
                             </td>
                             <td>
@@ -429,17 +429,17 @@ export default function PembuatanSPD() {
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>4.</td>
+                            <td style={{ textAlign: 'center' }}>4</td>
                             <td>Maksud Perjalanan Dinas</td>
                             <td>{formData.maksud_perjalanan}</td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>5.</td>
+                            <td style={{ textAlign: 'center' }}>5</td>
                             <td>Alat angkutan yang dipergunakan</td>
                             <td>{formData.alat_angkut}</td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>6.</td>
+                            <td style={{ textAlign: 'center' }}>6</td>
                             <td>
                                 a. Tempat Berangkat<br />
                                 b. Tempat Tujuan
@@ -450,11 +450,11 @@ export default function PembuatanSPD() {
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>7.</td>
+                            <td style={{ textAlign: 'center' }}>7</td>
                             <td>
                                 a. Lamanya Perjalanan Dinas<br />
                                 b. Tanggal Berangkat<br />
-                                c. Tanggal Harus Kembali/Tiba
+                                c. Tanggal Harus Kembali/Tiba di tempat baru *)
                             </td>
                             <td>
                                 a. {formData.lama_perjalanan}<br />
@@ -463,11 +463,29 @@ export default function PembuatanSPD() {
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>8.</td>
+                            <td style={{ textAlign: 'center' }}>8</td>
+                            <td>Pengikut: Nama</td>
+                            <td>Tanggal Lahir / Keterangan</td>
+                        </tr>
+                        <tr>
+                            <td style={{ textAlign: 'center' }}></td>
+                            <td>
+                                1. ...................................................<br />
+                                2. ...................................................<br />
+                                3. ...................................................
+                            </td>
+                            <td>
+                                1. .................... / ....................<br />
+                                2. .................... / ....................<br />
+                                3. .................... / ....................
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style={{ textAlign: 'center' }}>9</td>
                             <td>
                                 Pembebanan Anggaran<br />
                                 a. Instansi<br />
-                                b. Mata Anggaran
+                                b. Akun
                             </td>
                             <td>
                                 <br />
@@ -476,7 +494,7 @@ export default function PembuatanSPD() {
                             </td>
                         </tr>
                         <tr>
-                            <td style={{ textAlign: 'center' }}>9.</td>
+                            <td style={{ textAlign: 'center' }}>10</td>
                             <td>Keterangan lain-lain</td>
                             <td>Berdasarkan Surat Tugas No: {formData.no_st}</td>
                         </tr>
