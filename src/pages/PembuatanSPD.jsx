@@ -79,9 +79,9 @@ export default function PembuatanSPD() {
     );
 
     const renderDigitalSignatureLampiran = (name, nip) => (
-        <div style={{ marginTop: '0.5rem' }}>
-            <QRCode value={window.location.origin} size={50} style={{ marginBottom: '0.25rem' }} />
-            <div style={{ lineHeight: 1.2 }}>
+        <div style={{ marginTop: '0.15rem' }}>
+            <QRCode value={window.location.origin} size={40} style={{ marginBottom: '0.15rem' }} />
+            <div style={{ lineHeight: 1.1 }}>
                 <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>{name}</span><br />
                 NIP. {nip}
             </div>
@@ -512,14 +512,12 @@ export default function PembuatanSPD() {
                 <table className="spd-table" style={{ width: '100%', marginBottom: '0', border: '1px solid black' }}>
                     <tbody>
                         <tr>
-                            <td style={{ width: '50%', borderRight: '1px solid black', padding: '0.5rem' }}>
-                                <br />
-                                <br />
+                            <td style={{ width: '50%', borderRight: '1px solid black', padding: '0.15rem 0.25rem' }}>
                                 <br />
                                 <br />
                                 <br />
                             </td>
-                            <td style={{ width: '50%', padding: '0.5rem' }}>
+                            <td style={{ width: '50%', padding: '0.15rem 0.25rem' }}>
                                 <table style={{ width: '100%', border: 'none' }}>
                                     <tbody>
                                         <tr>
@@ -559,7 +557,7 @@ export default function PembuatanSPD() {
 
                         {/* SECTION II */}
                         <tr>
-                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                            <td style={{ padding: '0.15rem 0.25rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
                                 <table style={{ width: '100%', border: 'none' }}>
                                     <tbody>
                                         <tr>
@@ -574,15 +572,15 @@ export default function PembuatanSPD() {
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td colSpan="2" style={{ paddingTop: '0.5rem', border: 'none' }}>Kepala ...................................................</td>
+                                            <td colSpan="2" style={{ paddingTop: '0.15rem', border: 'none' }}>Kepala ...................................................</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <br /><br />
+                                <br />
                                 <p style={{ marginLeft: '1rem' }}>(...................................................)</p>
                                 <p style={{ marginLeft: '1rem' }}>NIP ...................................................</p>
                             </td>
-                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
+                            <td style={{ padding: '0.15rem 0.25rem', borderTop: '1px solid black' }}>
                                 <table style={{ width: '100%', border: 'none' }}>
                                     <tbody>
                                         <tr>
@@ -598,11 +596,11 @@ export default function PembuatanSPD() {
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
                                         </tr>
                                         <tr>
-                                            <td colSpan="2" style={{ paddingTop: '0.5rem', border: 'none' }}>Kepala ...................................................</td>
+                                            <td colSpan="2" style={{ paddingTop: '0.15rem', border: 'none' }}>Kepala ...................................................</td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <br /><br />
+                                <br />
                                 <p>(...................................................)</p>
                                 <p>NIP ...................................................</p>
                             </td>
@@ -611,7 +609,7 @@ export default function PembuatanSPD() {
 
                         {/* SECTION VI - ARRIVAL BACK AT BASE */}
                         <tr>
-                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                            <td style={{ padding: '0.15rem 0.25rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
                                 <table style={{ width: '100%', border: 'none' }}>
                                     <tbody>
                                         <tr>
@@ -631,7 +629,7 @@ export default function PembuatanSPD() {
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td colSpan="2" style={{ paddingTop: '1rem', border: 'none' }}>Pejabat Pembuat Komitmen</td>
+                                            <td colSpan="2" style={{ paddingTop: '0.15rem', border: 'none' }}>Pejabat Pembuat Komitmen</td>
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
@@ -642,25 +640,25 @@ export default function PembuatanSPD() {
                                     </tbody>
                                 </table>
                             </td>
-                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
+                            <td style={{ padding: '0.15rem 0.25rem', borderTop: '1px solid black' }}>
                                 <p style={{ textAlign: 'justify' }}>Telah diperiksa dengan keterangan bahwa perjalanan tersebut di atas benar dilakukan atas perintahnya dan semata-mata untuk kepentingan jabatan dalam waktu yang sesingkat-singkatnya.</p>
-                                <p style={{ marginTop: '0.5rem' }}>Pejabat Pembuat Komitmen</p>
+                                <p style={{ marginTop: '0.15rem' }}>Pejabat Pembuat Komitmen</p>
                                 {renderDigitalSignatureLampiran(ppkUser.nama_lengkap, ppkUser.nip)}
                             </td>
                         </tr>
 
                         {/* SECTION VII - CATATAN */}
                         <tr>
-                            <td style={{ padding: '0.5rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                            <td style={{ padding: '0.15rem 0.25rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
                                 <p>VII. Catatan Lain-lain</p>
                             </td>
-                            <td style={{ padding: '0.5rem', borderTop: '1px solid black' }}>
+                            <td style={{ padding: '0.15rem 0.25rem', borderTop: '1px solid black' }}>
                             </td>
                         </tr>
 
                         {/* SECTION VIII - PERHATIAN */}
                         <tr>
-                            <td colSpan="2" style={{ padding: '0.5rem 1rem', borderTop: '1px solid black' }}>
+                            <td colSpan="2" style={{ padding: '0.15rem 0.25rem', borderTop: '1px solid black' }}>
                                 <p>VIII. <strong>PERHATIAN:</strong></p>
                                 <p style={{ fontSize: '9pt', textAlign: 'justify' }}>
                                     PPK yang menerbitkan SPD, pegawai yang melakukan perjalanan dinas, para pejabat yang mengesahkan tanggal berangkat/tiba, serta bendahara pengeluaran bertanggung jawab berdasarkan peraturan-peraturan Keuangan Negara apabila negara menderita rugi akibat kesalahan, kelalaian, dan kealpaannya.
