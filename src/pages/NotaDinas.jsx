@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import QRCode from 'react-qr-code';
 
@@ -8,6 +8,8 @@ export default function NotaDinas() {
         nomor: 'ND/01/I/2026',
         tujuan: '',
         tanggal: new Date().toISOString().split('T')[0],
+        tanggal_berangkat: '',
+        tanggal_pulang: '',
         perihal: '',
         dasar: '',
         maksud: '',
@@ -21,6 +23,21 @@ export default function NotaDinas() {
     const [selectedND, setSelectedND] = useState(null);
     // eslint-disable-next-line no-unused-vars
     const [ppkUser, setPpkUser] = useState(null);
+    const [visibleCount, setVisibleCount] = useState(10);
+    const loadMoreRef = useRef(null);
+
+    // Infinite scroll observer
+    const lastObserver = useRef(null);
+    const sentinelRef = useCallback(node => {
+        if (lastObserver.current) lastObserver.current.disconnect();
+        if (!node) return;
+        lastObserver.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                setVisibleCount(prev => prev + 10);
+            }
+        }, { threshold: 0.1 });
+        lastObserver.current.observe(node);
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -71,6 +88,8 @@ export default function NotaDinas() {
             const payload = {
                 nomor_nd: formData.nomor,
                 tanggal_nd: formData.tanggal,
+                tanggal_berangkat: formData.tanggal_berangkat,
+                tanggal_pulang: formData.tanggal_pulang,
                 tujuan: formData.tujuan,
                 perihal: formData.perihal,
                 dasar: formData.dasar,
@@ -82,16 +101,23 @@ export default function NotaDinas() {
             const endpoint = editId ? `/api/nota-dinas/${editId}` : '/api/nota-dinas';
             const method = editId ? 'PUT' : 'POST';
 
-            await authFetch(endpoint, {
+            const res = await authFetch(endpoint, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            const saved = await res.json();
+
+            // Update state lokal tanpa re-fetch seluruh data
+            if (editId) {
+                setSubmittedForms(prev => prev.map(f => f.id === editId ? { ...f, ...saved } : f));
+            } else {
+                setSubmittedForms(prev => [{ ...saved, pengusul: { id: user?.id, nip: user?.nip, nama_lengkap: user?.nama_lengkap || user?.nama, jabatan: user?.jabatan, role: user?.role } }, ...prev]);
+            }
 
             alert(editId ? 'Nota Dinas berhasil diperbarui!' : 'Nota Dinas berhasil diajukan untuk persetujuan PPK!');
-            fetchData();
             setEditId(null);
-            setFormData({ ...formData, nomor: `ND/${Math.floor(Math.random() * 100)}/I/2026`, perihal: '', dasar: '', maksud: '', tujuan: '', pegawaiList: [''] });
+            setFormData({ ...formData, nomor: `ND/${Math.floor(Math.random() * 100)}/I/2026`, perihal: '', dasar: '', maksud: '', tujuan: '', tanggal_berangkat: '', tanggal_pulang: '', pegawaiList: [''] });
         } catch (error) {
             console.error(error);
             alert('Gagal mengirim Nota Dinas');
@@ -104,10 +130,12 @@ export default function NotaDinas() {
             nomor: form.nomor_nd,
             tujuan: form.tujuan || '',
             tanggal: form.tanggal_nd.split('T')[0],
+            tanggal_berangkat: form.tanggal_berangkat ? form.tanggal_berangkat.split('T')[0] : '',
+            tanggal_pulang: form.tanggal_pulang ? form.tanggal_pulang.split('T')[0] : '',
             perihal: form.perihal || '',
             dasar: form.dasar || '',
             maksud: form.maksud || '',
-            pegawaiList: form.pegawai_ditugaskan ? (form.pegawai_ditugaskan.includes('|') ? form.pegawai_ditugaskan.split(' | ') : form.pegawai_ditugaskan.split(', ')) : ['']
+            pegawaiList: form.pegawai_ditugaskan ? form.pegawai_ditugaskan.split(' | ').map(n => n.trim()).filter(Boolean) : ['']
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
@@ -150,8 +178,19 @@ export default function NotaDinas() {
                                     <input type="text" className="form-control" name="tujuan" value={formData.tujuan} onChange={handleChange} placeholder="Contoh: Jakarta / Surabaya / Hotel ABC..." required />
                                 </div>
                                 <div className="form-group">
-                                    <label className="form-label">Tanggal</label>
+                                    <label className="form-label">Tanggal Nota Dinas</label>
                                     <input type="date" className="form-control" name="tanggal" value={formData.tanggal} onChange={handleChange} required />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div className="form-group">
+                                    <label className="form-label">Tanggal Berangkat</label>
+                                    <input type="date" className="form-control" name="tanggal_berangkat" value={formData.tanggal_berangkat} onChange={handleChange} required />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Tanggal Pulang</label>
+                                    <input type="date" className="form-control" name="tanggal_pulang" value={formData.tanggal_pulang} onChange={handleChange} required />
                                 </div>
                             </div>
 
@@ -224,18 +263,20 @@ export default function NotaDinas() {
                                         <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Memuat data...</td></tr>
                                     ) : submittedForms.length === 0 ? (
                                         <tr><td colSpan="6" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Tidak ada riwayat pengajuan.</td></tr>
-                                    ) : submittedForms.map(form => (
+                                    ) : submittedForms.slice(0, visibleCount).map(form => (
                                         <tr key={form.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                             <td style={{ padding: '1rem', whiteSpace: 'nowrap' }}>{new Date(form.tanggal_nd).toLocaleDateString('id-ID')}</td>
                                             <td style={{ padding: '1rem', fontWeight: 600 }}>{form.nomor_nd}</td>
                                             <td style={{ padding: '1rem' }}>
                                                 <div style={{ fontWeight: 500 }}>{form.perihal}</div>
-                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Tujuan: {form.tujuan}</div>
+                                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
+                                                    Tujuan: {form.tujuan} | Waktu: {form.tanggal_berangkat && new Date(form.tanggal_berangkat).toLocaleDateString('id-ID')} s.d. {form.tanggal_pulang && new Date(form.tanggal_pulang).toLocaleDateString('id-ID')}
+                                                </div>
                                             </td>
                                             <td style={{ padding: '1rem' }}>
                                                 <ul style={{ margin: 0, paddingLeft: '1.2rem', color: 'var(--primary-color)', fontSize: '0.85rem' }}>
                                                     {form.pegawai_ditugaskan ? (
-                                                        form.pegawai_ditugaskan.split(form.pegawai_ditugaskan.includes('|') ? ' | ' : ', ').map((p, i) => (
+                                                        form.pegawai_ditugaskan.split(' | ').map(n => n.trim()).filter(Boolean).map((p, i) => (
                                                             <li key={i}>{p}</li>
                                                         ))
                                                     ) : <li>-</li>}
@@ -266,6 +307,17 @@ export default function NotaDinas() {
                                 </tbody>
                             </table>
                         </div>
+                        {/* Infinite scroll sentinel */}
+                        {!isLoading && visibleCount < submittedForms.length && (
+                            <div ref={sentinelRef} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                Memuat {Math.min(10, submittedForms.length - visibleCount)} data lagi...
+                            </div>
+                        )}
+                        {!isLoading && submittedForms.length > 10 && visibleCount >= submittedForms.length && (
+                            <div style={{ padding: '0.75rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', borderTop: '1px solid var(--border-color)' }}>
+                                Semua {submittedForms.length} data telah ditampilkan
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -329,11 +381,11 @@ export default function NotaDinas() {
                     </table>
 
                     <div style={{ padding: '0.5rem 0' }}>
-                        <p style={{ margin: '0 0 1rem 0' }}>{selectedND.dasar ? `Mendasari ${selectedND.dasar}, d` : 'D'}engan ini kami usulkan perjalanan dinas dalam rangka {selectedND.maksud} ke {selectedND.tujuan}.</p>
+                        <p style={{ margin: '0 0 1rem 0' }}>{selectedND.dasar ? `Mendasari ${selectedND.dasar}, d` : 'D'}engan ini kami usulkan perjalanan dinas dalam rangka {selectedND.maksud} ke {selectedND.tujuan} pada tanggal {new Date(selectedND.tanggal_berangkat).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })} s.d. {new Date(selectedND.tanggal_pulang).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}.</p>
 
                         <p style={{ margin: '0 0 0.5rem 0' }}>Adapun pegawai yang kami usulkan adalah sebagai berikut:</p>
                         <ol style={{ paddingLeft: '1.5rem' }}>
-                            {selectedND.pegawai_ditugaskan?.split(selectedND.pegawai_ditugaskan.includes('|') ? ' | ' : ', ').map((peg, idx) => (
+                            {selectedND.pegawai_ditugaskan?.split(' | ').map(n => n.trim()).filter(Boolean).map((peg, idx) => (
                                 <li key={idx} style={{ marginBottom: '0.2rem' }}>{peg}</li>
                             ))}
                         </ol>

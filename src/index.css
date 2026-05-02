@@ -438,4 +438,324 @@ button {
   div[style*="textAlign: right"] {
     text-align: left !important;
   }
+
+  /* Geotagging confirmation grid stacks vertically on mobile */
+  .geo-step-content div[style*="gridTemplateColumns: 120px"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ========================================
+   GEOTAGGING / CAMERA STYLES
+   ======================================== */
+
+/* Step content area */
+.geo-step-content {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Main action button */
+.geo-btn-main {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 52px;
+}
+
+/* Submit button (green) */
+.geo-btn-submit {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 52px;
+  background-color: var(--success-color);
+  color: white;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.geo-btn-submit:hover {
+  background-color: #059669;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+}
+
+.geo-btn-submit:active {
+  transform: translateY(0);
+}
+
+/* Camera container */
+.geo-camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  max-height: 70vh;
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* Camera controls at bottom */
+.geo-camera-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  z-index: 2;
+}
+
+/* Small control buttons (back, switch) */
+.geo-cam-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: white;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.2s;
+}
+
+.geo-cam-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.geo-cam-btn:active {
+  transform: scale(0.92);
+}
+
+/* Main capture button */
+.geo-capture-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: transparent;
+  border: 4px solid white;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.geo-capture-btn:hover {
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.geo-capture-btn:active {
+  transform: scale(0.9);
+}
+
+.geo-capture-btn:active .geo-capture-btn-inner {
+  transform: scale(0.85);
+}
+
+.geo-capture-btn-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: white;
+  transition: transform 0.15s;
+}
+
+/* Viewfinder corner overlays */
+.geo-viewfinder {
+  position: absolute;
+  inset: 15% 10%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.geo-vf-corner {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: rgba(255, 255, 255, 0.6);
+  border-style: solid;
+  border-width: 0;
+}
+
+.geo-vf-tl {
+  top: 0;
+  left: 0;
+  border-top-width: 3px;
+  border-left-width: 3px;
+  border-top-left-radius: 6px;
+}
+
+.geo-vf-tr {
+  top: 0;
+  right: 0;
+  border-top-width: 3px;
+  border-right-width: 3px;
+  border-top-right-radius: 6px;
+}
+
+.geo-vf-bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 3px;
+  border-left-width: 3px;
+  border-bottom-left-radius: 6px;
+}
+
+.geo-vf-br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 3px;
+  border-right-width: 3px;
+  border-bottom-right-radius: 6px;
+}
+
+/* GPS Spinner */
+.geo-gps-spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  margin: 0 auto;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulse animation for GPS badge */
+@keyframes pulse-badge {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Info rows in confirmation */
+.geo-info-row {
+  padding: 0.4rem 0.6rem;
+  background-color: var(--secondary-color);
+  border-radius: 8px;
+}
+
+/* Success icon */
+.geo-success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: var(--success-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin: 0 auto 1rem auto;
+  animation: pop-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pop-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* History items */
+.geo-history-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  align-items: center;
+  transition: background-color 0.15s;
+}
+
+.geo-history-item:active {
+  background-color: var(--secondary-color);
+}
+
+/* Edit button in history */
+.geo-edit-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.geo-edit-btn:hover {
+  background-color: var(--secondary-color);
+  border-color: var(--text-muted);
+}
+
+.geo-edit-btn:active {
+  transform: scale(0.92);
+}
+
+/* Button spinner */
+.geo-btn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* Mobile-specific camera adjustments */
+@media (max-width: 768px) {
+  .geo-camera-container {
+    aspect-ratio: 3/4;
+    max-height: 65vh;
+  }
+
+  .geo-capture-btn {
+    width: 68px;
+    height: 68px;
+  }
+
+  .geo-cam-btn {
+    width: 44px;
+    height: 44px;
+  }
 }

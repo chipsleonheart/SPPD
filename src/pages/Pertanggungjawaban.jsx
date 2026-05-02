@@ -198,7 +198,7 @@ export default function Pertanggungjawaban() {
     const renderDigitalSignature = (name, nip) => (
         <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #666', padding: '0.5rem', borderRadius: '4px', maxWidth: '350px', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
             <div style={{ marginRight: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                <QRCode value={window.location.origin} size={60} />
+                <QRCode value={window.location.origin + '/verifikasi/spd/' + formData.sppd_id} size={60} />
             </div>
             <div style={{ fontSize: '8pt', lineHeight: 1.3, fontFamily: 'Arial, sans-serif', textAlign: 'left' }}>
                 Telah ditandatangani secara digital oleh:<br />
@@ -595,6 +595,15 @@ export default function Pertanggungjawaban() {
                                     <td style={{ width: '25%' }}>Mendasari Nota Dinas</td>
                                     <td style={{ width: '2%' }}>:</td>
                                     <td><strong>Nomor: {selectedNominatifNd.nd?.nomor_nd}</strong>, Tanggal: {selectedNominatifNd.nd?.tanggal_nd ? new Date(selectedNominatifNd.nd.tanggal_nd).toLocaleDateString('id-ID') : '-'}</td>
+                                </tr>
+                                <tr>
+                                    <td style={{ width: '25%', verticalAlign: 'top' }}>Tanggal Pelaksanaan</td>
+                                    <td style={{ width: '2%', verticalAlign: 'top' }}>:</td>
+                                    <td>
+                                        {selectedNominatifNd.nd?.tanggal_berangkat && selectedNominatifNd.nd?.tanggal_pulang ? (
+                                            `${new Date(selectedNominatifNd.nd.tanggal_berangkat).toLocaleDateString('id-ID')} s.d. ${new Date(selectedNominatifNd.nd.tanggal_pulang).toLocaleDateString('id-ID')}`
+                                        ) : '-'}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td style={{ width: '25%', verticalAlign: 'top' }}>Mendasari Surat Tugas</td>

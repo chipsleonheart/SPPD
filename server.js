@@ -230,7 +230,7 @@ app.get('/api/nota-dinas', authenticateToken, async (req, res) => {
 
 app.post('/api/nota-dinas', authenticateToken, async (req, res) => {
     try {
-        const { nomor_nd, tanggal_nd, perihal, tujuan, maksud, dasar, pegawai_ditugaskan, pengusul_id } = req.body;
+        const { nomor_nd, tanggal_nd, perihal, tujuan, maksud, dasar, pegawai_ditugaskan, pengusul_id, tanggal_berangkat, tanggal_pulang } = req.body;
         // Seed dummy pengusul if empty (for local dev bypass auth)
         let uid = pengusul_id;
         if (!uid) {
@@ -244,7 +244,19 @@ app.post('/api/nota-dinas', authenticateToken, async (req, res) => {
         }
 
         const data = await prisma.notaDinas.create({
-            data: { nomor_nd, tanggal_nd: new Date(tanggal_nd), perihal, tujuan, maksud, dasar, pegawai_ditugaskan, pengusul_id: uid, status: 'DIAJUKAN' }
+            data: {
+                nomor_nd,
+                tanggal_nd: new Date(tanggal_nd),
+                perihal,
+                tujuan,
+                maksud,
+                dasar,
+                pegawai_ditugaskan,
+                pengusul_id: uid,
+                status: 'DIAJUKAN',
+                tanggal_berangkat: tanggal_berangkat ? new Date(tanggal_berangkat) : null,
+                tanggal_pulang: tanggal_pulang ? new Date(tanggal_pulang) : null
+            }
         });
         res.json(data);
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -253,10 +265,20 @@ app.post('/api/nota-dinas', authenticateToken, async (req, res) => {
 app.put('/api/nota-dinas/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { nomor_nd, tanggal_nd, perihal, tujuan, maksud, dasar, pegawai_ditugaskan } = req.body;
+        const { nomor_nd, tanggal_nd, perihal, tujuan, maksud, dasar, pegawai_ditugaskan, tanggal_berangkat, tanggal_pulang } = req.body;
         const updated = await prisma.notaDinas.update({
             where: { id },
-            data: { nomor_nd, tanggal_nd: new Date(tanggal_nd), perihal, tujuan, maksud, dasar, pegawai_ditugaskan }
+            data: {
+                nomor_nd,
+                tanggal_nd: new Date(tanggal_nd),
+                perihal,
+                tujuan,
+                maksud,
+                dasar,
+                pegawai_ditugaskan,
+                tanggal_berangkat: tanggal_berangkat ? new Date(tanggal_berangkat) : null,
+                tanggal_pulang: tanggal_pulang ? new Date(tanggal_pulang) : null
+            }
         });
         res.json(updated);
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -283,6 +305,35 @@ app.get('/api/public/surat-tugas/:id', async (req, res) => {
             }
         });
         if (!data) return res.status(404).json({ error: 'Surat Tugas tidak ditemukan' });
+        res.json(data);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/public/nota-dinas/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await prisma.notaDinas.findUnique({
+            where: { id },
+            include: {
+                pengusul: { select: { id: true, nip: true, nama_lengkap: true, jabatan: true, role: true } }
+            }
+        });
+        if (!data) return res.status(404).json({ error: 'Nota Dinas tidak ditemukan' });
+        res.json(data);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/public/sppd/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await prisma.sppd.findUnique({
+            where: { id },
+            include: {
+                surat_tugas: { include: { nota_dinas: true } },
+                pegawai: { select: { id: true, nip: true, nama_lengkap: true, pangkat_golongan: true, jabatan: true } }
+            }
+        });
+        if (!data) return res.status(404).json({ error: 'SPPD tidak ditemukan' });
         res.json(data);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });

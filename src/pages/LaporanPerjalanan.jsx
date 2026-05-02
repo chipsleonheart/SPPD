@@ -131,7 +131,7 @@ export default function LaporanPerjalanan() {
     const renderDigitalSignature = (name, nip) => (
         <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #666', padding: '0.5rem', borderRadius: '4px', maxWidth: '350px', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
             <div style={{ marginRight: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                <QRCode value={window.location.origin} size={60} />
+                <QRCode value={window.location.origin + '/verifikasi/nd/' + (formData.geotag?.sppd_id || '')} size={60} />
             </div>
             <div style={{ fontSize: '8pt', lineHeight: 1.3, fontFamily: 'Arial, sans-serif', textAlign: 'left' }}>
                 Telah ditandatangani secara digital oleh:<br />

@@ -12,6 +12,24 @@ export default function PembuatanSPD() {
     const [isSaving, setIsSaving] = useState(false);
     const [shouldPrint, setShouldPrint] = useState(false);
 
+    // Helper: Hitung Lama Perjalanan (Hari) dan Konversi Angka ke Huruf
+    const numberToWords = (num) => {
+        const words = ['Nol', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
+        if (num <= 11) return words[num];
+        if (num <= 19) return words[num - 10] + ' Belas';
+        if (num <= 99) return words[Math.floor(num / 10)] + ' Puluh' + (num % 10 > 0 ? ' ' + words[num % 10] : '');
+        return num.toString();
+    };
+
+    const calculateDays = (start, end) => {
+        if (!start || !end) return '0 Hari';
+        const date1 = new Date(start);
+        const date2 = new Date(end);
+        const diffTime = Math.abs(date2 - date1);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Include both start and end dates
+        return `${diffDays} (${numberToWords(diffDays)}) Hari`;
+    };
+
     const [formData, setFormData] = useState({
         surat_tugas_id: '', pegawai_id: '', no_spd: '', no_st: '', pejabat_pembuat_komitmen: 'Siti Aminah, S.E.', nama_pegawai: '', tingkat_biaya: 'Tingkat B', maksud_perjalanan: 'Monitoring Pelaksanaan Anggaran', alat_angkut: 'Pesawat Udara', tempat_berangkat: 'Jakarta', tempat_tujuan: 'Surabaya', lama_perjalanan: '3 (Tiga) Hari', tanggal_berangkat: new Date().toISOString().split('T')[0], tanggal_kembali: new Date().toISOString().split('T')[0], instansi: 'Kementerian X', mata_anggaran: '524111 (Belanja Perjalanan Dinas Biasa)'
     });
@@ -50,7 +68,13 @@ export default function PembuatanSPD() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => {
+            const updated = { ...prev, [name]: value };
+            if (name === 'tanggal_berangkat' || name === 'tanggal_kembali') {
+                updated.lama_perjalanan = calculateDays(updated.tanggal_berangkat, updated.tanggal_kembali);
+            }
+            return updated;
+        });
     };
 
     const getAssignedPegawai = (st) => {
@@ -59,7 +83,7 @@ export default function PembuatanSPD() {
         }
         // Fallback for older data or if include fails
         if (!st.nota_dinas?.pegawai_ditugaskan) return [];
-        let p_names = st.nota_dinas.pegawai_ditugaskan.split(/[|,]/).map(n => n.trim()).filter(Boolean);
+        let p_names = st.nota_dinas.pegawai_ditugaskan.split('|').map(n => n.trim()).filter(Boolean);
         return p_names.map(name => {
             return pegawaiList.find(p => p.nama_lengkap.toLowerCase().includes(name.toLowerCase())) || { id: `unknown-${name}`, nama_lengkap: name, nip: '-' };
         });
@@ -68,7 +92,7 @@ export default function PembuatanSPD() {
     const renderDigitalSignature = (name, nip) => (
         <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #666', padding: '0.5rem', borderRadius: '4px', maxWidth: '350px', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
             <div style={{ marginRight: '0.75rem', display: 'flex', alignItems: 'center' }}>
-                <QRCode value={window.location.origin} size={60} />
+                <QRCode value={window.location.origin + '/verifikasi/spd/' + (formData.sppd_id_for_qr || formData.surat_tugas_id)} size={60} />
             </div>
             <div style={{ fontSize: '8pt', lineHeight: 1.3, fontFamily: 'Arial, sans-serif', textAlign: 'left' }}>
                 Telah ditandatangani secara digital oleh:<br />
@@ -80,7 +104,7 @@ export default function PembuatanSPD() {
 
     const renderDigitalSignatureLampiran = (name, nip) => (
         <div style={{ marginTop: '0.15rem' }}>
-            <QRCode value={window.location.origin} size={40} style={{ marginBottom: '0.15rem' }} />
+            <QRCode value={window.location.origin + '/verifikasi/spd/' + (formData.sppd_id_for_qr || formData.surat_tugas_id)} size={40} style={{ marginBottom: '0.15rem' }} />
             <div style={{ lineHeight: 1.1 }}>
                 <span style={{ fontWeight: 'bold', textDecoration: 'underline' }}>{name}</span><br />
                 NIP. {nip}
@@ -90,6 +114,12 @@ export default function PembuatanSPD() {
 
     const handleBuatSpd = (st, peg) => {
         const nextNo = sppdList.length + 1;
+
+        let tglBerangkat = new Date().toISOString().split('T')[0];
+        let tglKembali = new Date().toISOString().split('T')[0];
+        if (st.nota_dinas?.tanggal_berangkat) tglBerangkat = new Date(st.nota_dinas.tanggal_berangkat).toISOString().split('T')[0];
+        if (st.nota_dinas?.tanggal_pulang) tglKembali = new Date(st.nota_dinas.tanggal_pulang).toISOString().split('T')[0];
+
         setFormData(prev => ({
             ...prev,
             surat_tugas_id: st.id,
@@ -100,7 +130,10 @@ export default function PembuatanSPD() {
             pangkat_golongan: peg.pangkat_golongan || '-',
             jabatan: peg.jabatan || '-',
             maksud_perjalanan: st.menimbang || st.nota_dinas?.perihal || 'Perjalanan Dinas',
-            tempat_tujuan: st.nota_dinas?.tujuan || 'Surabaya'
+            tempat_tujuan: st.nota_dinas?.tujuan || 'Surabaya',
+            tanggal_berangkat: tglBerangkat,
+            tanggal_kembali: tglKembali,
+            lama_perjalanan: calculateDays(tglBerangkat, tglKembali)
         }));
         setEditingSpdId(null);
         setViewMode('form');
@@ -121,6 +154,7 @@ export default function PembuatanSPD() {
             tempat_tujuan: spd.tempat_tujuan || 'Surabaya',
             tanggal_berangkat: new Date(spd.tanggal_berangkat).toISOString().split('T')[0],
             tanggal_kembali: new Date(spd.tanggal_kembali).toISOString().split('T')[0],
+            lama_perjalanan: calculateDays(spd.tanggal_berangkat, spd.tanggal_kembali),
             instansi: spd.instansi_pembebanan || 'Kementerian X',
             mata_anggaran: spd.mata_anggaran || '524111',
             pangkat_golongan: peg.pangkat_golongan || '-',
@@ -386,6 +420,20 @@ export default function PembuatanSPD() {
               padding: 0.5rem;
               vertical-align: top;
             }
+            .print-spd-container.lampiran {
+              font-size: 10pt;
+              line-height: 1.15;
+            }
+            .spd-table-lampiran > tbody > tr > td {
+              padding: 0.2rem 0.3rem;
+            }
+            .spd-table-lampiran table td {
+              padding: 0 0.1rem;
+              border: none;
+            }
+            .spd-table-lampiran p {
+              margin: 0.1rem 0;
+            }
           }
           .print-spd-container {
             display: none;
@@ -508,8 +556,8 @@ export default function PembuatanSPD() {
             </div>
 
             {/* HALAMAN BELAKANG (LAMPIRAN SPD) */}
-            <div className="print-spd-container" style={{ pageBreakBefore: 'always', fontSize: '10pt' }}>
-                <table className="spd-table" style={{ width: '100%', marginBottom: '0', border: '1px solid black' }}>
+            <div className="print-spd-container lampiran" style={{ pageBreakBefore: 'always' }}>
+                <table className="spd-table spd-table-lampiran" style={{ width: '100%', marginBottom: '0', border: '1px solid black' }}>
                     <tbody>
                         <tr>
                             <td style={{ width: '50%', borderRight: '1px solid black', padding: '0.15rem 0.25rem' }}>
@@ -522,12 +570,12 @@ export default function PembuatanSPD() {
                                     <tbody>
                                         <tr>
                                             <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>I.</td>
-                                            <td style={{ width: '100px', verticalAlign: 'top', border: 'none' }}>Berangkat dari</td>
+                                            <td style={{ width: '100px', verticalAlign: 'top', border: 'none' }}>Berangkat</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>(Tempat Kedudukan)</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>(Tempat)</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}></td>
                                         </tr>
                                         <tr>
@@ -537,7 +585,7 @@ export default function PembuatanSPD() {
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_berangkat}</td>
                                         </tr>
                                         <tr>
@@ -562,12 +610,12 @@ export default function PembuatanSPD() {
                                     <tbody>
                                         <tr>
                                             <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>II.</td>
-                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba di</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_berangkat}</td>
                                         </tr>
                                         <tr>
@@ -584,7 +632,7 @@ export default function PembuatanSPD() {
                                 <table style={{ width: '100%', border: 'none' }}>
                                     <tbody>
                                         <tr>
-                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Berangkat dari</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Berangkat</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
                                         </tr>
                                         <tr>
@@ -592,7 +640,7 @@ export default function PembuatanSPD() {
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
                                         </tr>
                                         <tr>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
                                         </tr>
                                         <tr>
@@ -606,6 +654,107 @@ export default function PembuatanSPD() {
                             </td>
                         </tr>
 
+                        {/* SECTION III */}
+                        <tr>
+                            <td style={{ padding: '0.15rem 0.25rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>II.</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_berangkat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ paddingTop: '0.15rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br />
+                                <p style={{ marginLeft: '1rem' }}>(...................................................)</p>
+                                <p style={{ marginLeft: '1rem' }}>NIP ...................................................</p>
+                            </td>
+                            <td style={{ padding: '0.15rem 0.25rem', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Berangkat</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Ke</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan="2" style={{ paddingTop: '0.15rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br />
+                                <p>(...................................................)</p>
+                                <p>NIP ...................................................</p>
+                            </td>
+                        </tr>
+
+                        {/* SECTION III */}
+                        <tr>
+                            <td style={{ padding: '0.15rem 0.25rem', borderRight: '1px solid black', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>II.</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_berangkat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ border: 'none' }}></td>
+                                            <td colSpan="2" style={{ paddingTop: '0.15rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br />
+                                <p style={{ marginLeft: '1rem' }}>(...................................................)</p>
+                                <p style={{ marginLeft: '1rem' }}>NIP ...................................................</p>
+                            </td>
+                            <td style={{ padding: '0.15rem 0.25rem', borderTop: '1px solid black' }}>
+                                <table style={{ width: '100%', border: 'none' }}>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Berangkat</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_tujuan}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Ke</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan="2" style={{ paddingTop: '0.15rem', border: 'none' }}>Kepala ...................................................</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br />
+                                <p>(...................................................)</p>
+                                <p>NIP ...................................................</p>
+                            </td>
+                        </tr>
 
                         {/* SECTION VI - ARRIVAL BACK AT BASE */}
                         <tr>
@@ -614,17 +763,17 @@ export default function PembuatanSPD() {
                                     <tbody>
                                         <tr>
                                             <td style={{ width: '10px', verticalAlign: 'top', border: 'none' }}>VI.</td>
-                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba di</td>
+                                            <td style={{ width: '80px', verticalAlign: 'top', border: 'none' }}>Tiba</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tempat_berangkat}</td>
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>(Tempat Kedudukan)</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>(Tempat)</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}></td>
                                         </tr>
                                         <tr>
                                             <td style={{ border: 'none' }}></td>
-                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Pada Tanggal</td>
+                                            <td style={{ verticalAlign: 'top', border: 'none' }}>Tanggal</td>
                                             <td style={{ verticalAlign: 'top', border: 'none' }}>: {formData.tanggal_kembali}</td>
                                         </tr>
                                         <tr>

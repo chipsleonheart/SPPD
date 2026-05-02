@@ -90,6 +90,9 @@ model NotaDinas {
   dasar              String?
   pegawai_ditugaskan String?
   
+  tanggal_berangkat  DateTime?
+  tanggal_pulang     DateTime?
+  
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 

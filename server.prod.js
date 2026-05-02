@@ -249,6 +249,50 @@ app.get('/api/public/surat-tugas/:id', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.get('/api/public/surat-tugas/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await prisma.suratTugas.findUnique({
+            where: { id },
+            include: {
+                nota_dinas: { include: { pengusul: true } },
+                pegawai: { include: { pegawai: true } }
+            }
+        });
+        if (!data) return res.status(404).json({ error: 'Surat Tugas tidak ditemukan' });
+        res.json(data);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/public/nota-dinas/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await prisma.notaDinas.findUnique({
+            where: { id },
+            include: {
+                pengusul: { select: { id: true, nip: true, nama_lengkap: true, jabatan: true, role: true } }
+            }
+        });
+        if (!data) return res.status(404).json({ error: 'Nota Dinas tidak ditemukan' });
+        res.json(data);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/public/sppd/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await prisma.sppd.findUnique({
+            where: { id },
+            include: {
+                surat_tugas: { include: { nota_dinas: true } },
+                pegawai: { select: { id: true, nip: true, nama_lengkap: true, pangkat_golongan: true, jabatan: true } }
+            }
+        });
+        if (!data) return res.status(404).json({ error: 'SPPD tidak ditemukan' });
+        res.json(data);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 app.get('/api/surat-tugas', authenticateToken, async (req, res) => {
     try {
         let where = {};
@@ -351,6 +395,23 @@ app.post('/api/geotagging', authenticateToken, upload.single('foto'), async (req
         const file_path = req.file ? `/uploads/${safeFolderName}/${req.file.filename}` : '';
         const checkin = await prisma.geotaggingCheckin.create({ data: { sppd_id, pegawai_id, latitude: parseFloat(latitude), longitude: parseFloat(longitude), foto_bukti_path: file_path } });
         res.json(checkin);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put('/api/geotagging/:id', authenticateToken, upload.single('foto'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { latitude, longitude } = req.body;
+        const updateData = {};
+        if (latitude) updateData.latitude = parseFloat(latitude);
+        if (longitude) updateData.longitude = parseFloat(longitude);
+        if (req.file) {
+            let stNumber = req.headers['x-st-number'] || 'Lainnya';
+            const safeFolderName = stNumber.replace(/[/\\]/g, '_').trim();
+            updateData.foto_bukti_path = `/uploads/${safeFolderName}/${req.file.filename}`;
+        }
+        const updated = await prisma.geotaggingCheckin.update({ where: { id }, data: updateData });
+        res.json(updated);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

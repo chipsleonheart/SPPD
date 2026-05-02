@@ -12,6 +12,8 @@ import Pertanggungjawaban from './pages/Pertanggungjawaban';
 import Geotagging from './pages/Geotagging';
 import LaporanPerjalanan from './pages/LaporanPerjalanan';
 import VerifikasiST from './pages/VerifikasiST';
+import VerifikasiND from './pages/VerifikasiND';
+import VerifikasiSPD from './pages/VerifikasiSPD';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
           {/* Public route */}
           <Route path="/login" element={<Login />} />
           <Route path="/verifikasi/st/:id" element={<VerifikasiST />} />
+          <Route path="/verifikasi/nd/:id" element={<VerifikasiND />} />
+          <Route path="/verifikasi/spd/:id" element={<VerifikasiSPD />} />
 
           {/* Protected routes — semua user yang sudah login */}
           <Route path="/" element={
