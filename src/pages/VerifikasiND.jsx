@@ -7,7 +7,6 @@ export default function VerifikasiND() {
     const [nd, setNd] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [ppkUser, setPpkUser] = useState(null);
 
     useEffect(() => {
         const fetchND = async () => {
@@ -17,11 +16,6 @@ export default function VerifikasiND() {
                 const data = await res.json();
                 setNd(data);
 
-                const resPeg = await fetch('/api/pegawai');
-                if (resPeg.ok) {
-                    const pegData = await resPeg.json();
-                    setPpkUser(pegData.find(p => p.role === 'PPK'));
-                }
             } catch (err) {
                 setError(err.message);
             } finally {

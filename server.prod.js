@@ -1,4 +1,3 @@
-/* global process */
 import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
@@ -91,7 +90,7 @@ app.post('/api/auth/login', async (req, res) => {
 
         const payload = { id: user.id, nip: user.nip, nama: user.nama_lengkap, role: user.role };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES });
-        const { password_hash, ...userSafe } = user;
+        const { password_hash: _PASSWORD_HASH, ...userSafe } = user;
         res.json({ token, user: userSafe });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -102,7 +101,7 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
     try {
         const user = await prisma.user.findUnique({ where: { id: req.user.id } });
         if (!user) return res.status(404).json({ error: 'User tidak ditemukan.' });
-        const { password_hash, ...userSafe } = user;
+        const { password_hash: _PASSWORD_HASH, ...userSafe } = user;
         res.json(userSafe);
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -443,7 +442,7 @@ app.post('/api/spj', authenticateToken, upload.fields([{ name: 'tiket' }, { name
 app.put('/api/spj/:id', authenticateToken, upload.fields([{ name: 'tiket' }, { name: 'taksi' }, { name: 'hotel' }]), async (req, res) => {
     try {
         const { id } = req.params;
-        const { sppd_id, pegawai_id, uang_harian_tarif, uang_harian_jumlah_hari, biaya_transportasi_tiket, biaya_transportasi_taksi, biaya_penginapan_tarif, biaya_penginapan_jumlah_malam, total_biaya_riil } = req.body;
+        const { uang_harian_tarif, uang_harian_jumlah_hari, biaya_transportasi_tiket, biaya_transportasi_taksi, biaya_penginapan_tarif, biaya_penginapan_jumlah_malam, total_biaya_riil } = req.body;
         const files = req.files || {};
         let stNumber = req.headers['x-st-number'] || 'Lainnya';
         const safeFolderName = stNumber.replace(/[/\\]/g, '_').trim();

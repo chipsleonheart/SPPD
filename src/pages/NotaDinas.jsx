@@ -24,7 +24,6 @@ export default function NotaDinas() {
     // eslint-disable-next-line no-unused-vars
     const [ppkUser, setPpkUser] = useState(null);
     const [visibleCount, setVisibleCount] = useState(10);
-    const loadMoreRef = useRef(null);
 
     // Infinite scroll observer
     const lastObserver = useRef(null);

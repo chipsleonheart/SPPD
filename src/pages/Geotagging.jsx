@@ -311,12 +311,6 @@ export default function Geotagging() {
         stopCamera();
     };
 
-    const getSpdLabel = (spd) => {
-        const tujuan = spd.tempat_tujuan || '-';
-        const tgl = spd.tanggal_berangkat ? new Date(spd.tanggal_berangkat).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-        return `${spd.nomor_spd} → ${tujuan} (${tgl})`;
-    };
-
     const selectedSPD = sppdList.find(s => s.id === selectedSppdId);
 
     // GPS status badge (shown floating during camera)

@@ -26,4 +26,8 @@ export default defineConfig([
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
     },
   },
+  {
+    files: ['seed-admin.js', 'seed_dummy.js', 'server.js', 'server.prod.js'],
+    languageOptions: { globals: globals.node },
+  },
 ])

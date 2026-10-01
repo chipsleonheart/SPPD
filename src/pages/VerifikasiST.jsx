@@ -10,23 +10,6 @@ export default function VerifikasiST() {
     const [kpaUser, setKpaUser] = useState(null);
     const [pegawaiList, setPegawaiList] = useState([]);
 
-    const numberToWords = (num) => {
-        const words = ['Nol', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
-        if (num <= 11) return words[num];
-        if (num <= 19) return words[num - 10] + ' Belas';
-        if (num <= 99) return words[Math.floor(num / 10)] + ' Puluh' + (num % 10 > 0 ? ' ' + words[num % 10] : '');
-        return num.toString();
-    };
-
-    const calculateDays = (start, end) => {
-        if (!start || !end) return '0 Hari';
-        const date1 = new Date(start);
-        const date2 = new Date(end);
-        const diffTime = Math.abs(date2 - date1);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        return `${diffDays} (${numberToWords(diffDays)}) Hari`;
-    };
-
     useEffect(() => {
         const fetchST = async () => {
             try {

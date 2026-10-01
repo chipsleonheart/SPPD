@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import QRCode from 'react-qr-code';
 
 export default function Pertanggungjawaban() {
-    const { authFetch, user, token } = useAuth();
+    const { authFetch, token } = useAuth();
     const [stList, setStList] = useState([]);
     const [sppdList, setSppdList] = useState([]);
     const [spjList, setSpjList] = useState([]);
